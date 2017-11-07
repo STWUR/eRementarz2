@@ -13,14 +13,28 @@ Data Visualisation cheatsheet
 
 <https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf>
 
+Github
+
+<https://github.com/STWUR/eRementarz2>
+
+
+Eseje o sztuce prezentowania danych
+<http://www.biecek.pl/Eseje/>
+
 Pakiety:
 - ggplot2
 - dplyr
 
+Cele wizualizacji
+============================
+
+- zrozumienie danych 
+- prezentacja zjawiska
+- przekonanie odbiorcy do określonej tezy
 
 Gramatyka wykresów
 ==============================
-<img src="img/grammtics.png" width="250%"/>
+<img src="img/grammtics.png" width="800px"/>
 
 Gramatyka wykresów
 ==============================
@@ -96,8 +110,6 @@ ggplot(mieszkania, aes(x=dzielnica, fill=as.factor(n_pokoj))) + geom_bar(positio
 Ostatnie szlify
 ==============================================
 ```{r, fig.align="center"}
-library(RColorBrewer)
-mieszkania <- read.csv("data/mieszkania_wroclaw_ceny.csv")
 mutate(mieszkania, n_pokoj=if_else(n_pokoj>4, "więcej niż 4", as.character(n_pokoj))) -> mieszkania
 ggplot(mieszkania, aes(x=dzielnica, fill=as.factor(n_pokoj))) + geom_bar(position="fill") +
   scale_fill_brewer(name="Liczba pokoi", palette="Reds") + geom_text(aes(label=..count..), stat="count", position="fill", vjust="bottom")
@@ -173,12 +185,48 @@ ggplot(mieszkania, aes(x=dzielnica, y=cena)) + geom_boxplot(stat="boxplot") +sca
 ```
 
 
+Zadania
+===================================================
+- Pokaż na wykresie pudełkowym zależność metrażu mieszkań w zależności od dzielnicy
+- Zaznacz kolorem kategorie cenowe
+- Jaką tendencję można wyciągnąć z tego wykresu?
+- Jakie są wartości liczbowe median metrażu?
+
+
+Metraż wg dzielnic
+===========================================
+```{r, fig.align="center"}
+mieszkania <- read.csv("data/mieszkania_wroclaw_ceny_rozbudowana.csv")
+ggplot(mieszkania, aes(x=dzielnica, y=metraz)) +  geom_boxplot() 
+```
+
+Metraż wg dzielnic i kategorii cenowych
+===========================================
+```{r, fig.align="center"}
+mieszkania <- read.csv("data/mieszkania_wroclaw_ceny_rozbudowana.csv")
+ggplot(mieszkania, aes(x=dzielnica, y=metraz, fill=kat_cenowa)) +  geom_boxplot() 
+```
+
+Mediany
+=============================
+```{r}
+aggregate(metraz ~ kat_cenowa + dzielnica, mieszkania, median)
+```
+
 
 Wykres punktowy
 ===========================================
 ```{r, fig.align="center"}
 mieszkania <- read.csv("data/mieszkania_wroclaw_ceny_rozbudowana.csv")
-ggplot(mieszkania, aes(x=metraz, y=cena_m2)) + geom_point() +facet_wrap(~dzielnica)
+ggplot(mieszkania, aes(x=metraz, y=cena_m2)) + geom_point()
+```
+
+
+Wykres punktowy z podziałami
+===========================================
+```{r, fig.align="center"}
+mieszkania <- read.csv("data/mieszkania_wroclaw_ceny_rozbudowana.csv")
+ggplot(mieszkania, aes(x=metraz, y=cena_m2)) + geom_point() + facet_wrap(~dzielnica)
 ```
 
 
@@ -211,4 +259,18 @@ ggplot(mieszkania, aes(x=metraz, y=cena_m2)) + geom_jitter(size=0.1) + geom_smoo
 mieszkania <- read.csv("data/mieszkania_wroclaw_ceny_rozbudowana.csv")
 filter(mieszkania, metraz<150, dzielnica != "Stare Miasto") -> mieszkania
 ggplot(mieszkania, aes(x=metraz, y=cena_m2)) + geom_jitter(size=0.1) + geom_smooth(method="loess") + facet_wrap(~dzielnica)
+```
+
+
+Zadanie
+=========================================
+- Stwórz wersję wykresu metrażu w zależności od dzielnic z użyciem podziałów
+- Czy ta wizualizacja jest lepsza czy gorsza od wersji z kolorami?
+
+
+Metraż wg dzielnic i kategorii cenowych
+===========================================
+```{r, fig.align="center"}
+mieszkania <- read.csv("data/mieszkania_wroclaw_ceny_rozbudowana.csv")
+ggplot(mieszkania, aes(x=dzielnica, y=metraz)) +  geom_boxplot() + facet_wrap(~kat_cenowa)
 ```
